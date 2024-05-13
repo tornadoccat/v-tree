@@ -284,6 +284,7 @@ addLayer("v", {
 				cost = new Decimal(10**18)
 				if (hasUpgrade('v', 51)) cost = cost.times(10**9)
 				if (hasUpgrade('v', 53)) cost = cost.times(10**9)
+				if (hasUpgrade('v', 51) && !hasUpgrade('v', 53) && !hasUpgrade('v', 52)) cost = cost.div(10**3)
 				return cost
 			},
 			unlocked() {return hasMilestone('a', 3)},
@@ -295,6 +296,7 @@ addLayer("v", {
 				if (hasUpgrade('v', 51)) cost = cost.times(10**9)
 				if (hasUpgrade('v', 52)) cost = cost.times(10**9)
 				if (hasUpgrade('v', 52) && !hasUpgrade('v', 51) && !hasUpgrade('v', 53)) cost = cost.div(10**3)
+				if (hasUpgrade('v', 51) && !hasUpgrade('v', 53) && !hasUpgrade('v', 52)) cost = cost.div(10**3)
 				return cost
 			},
 			unlocked() {return hasMilestone('a', 3)},
