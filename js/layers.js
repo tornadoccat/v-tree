@@ -1592,7 +1592,7 @@ addLayer("a", {
 				player.a.show_penalty_studies = false
 			},
 			canClick() {return true},
-			unlocked() {return player.a.show_penalty_studies},
+			unlocked() {return player.a.show_penalty_studies && hasMilestone('ra', 106)},
 			style: {"min-height": "60px"}
 		},
 		14: {
@@ -1601,7 +1601,7 @@ addLayer("a", {
 				player.a.show_penalty_studies = true
 			},
 			canClick() {return true},
-			unlocked() {return !player.a.show_penalty_studies},
+			unlocked() {return !player.a.show_penalty_studies && hasMilestone('ra', 106)},
 			style: {"min-height": "60px"}
 		},
 	},
