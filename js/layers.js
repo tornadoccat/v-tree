@@ -379,7 +379,7 @@ addLayer("v", {
 			},
 			effect() {
 				var amt = getBuyableAmount("v", 13)
-				if (hasUpgrade('vp', 64)) amt = amt.add(2)
+				if (hasUpgrade('vp', 64) && player.a.vachs[4] > 5) amt = amt.add(2)
 				var mult = new Decimal(0.5)
 				if(hasUpgrade('vp', 63)) mult = mult.times(2)
 				if(hasUpgrade('a', 63)) return new Decimal(0).add(amt.pow(3/4).mul(mult))
@@ -1587,7 +1587,7 @@ addLayer("a", {
 		if (player["a"].vachs[4] < 6 && hasUpgrade('v', 53)) {
 			for (let i = player["a"].vachs[4]; i < 6; i++) {
 				if( player["v"].points.gte(vachreqs2(4,player["a"].vachs[4])) 
-				&& getvupgs().sub(layers["v"].buyables[13].effect()).lte(vachreqs(4,player["a"].vachs[4])) 
+				&& getvupgs().lte(vachreqs(4,player["a"].vachs[4])) 
 				&& getvbuys().lte(vachreqs(4,player["a"].vachs[4])) 
 				&& new Decimal(player["a"].upgrades.length).lte(vachreqs(4,player["a"].vachs[4])) ) {
 					earnvach(4)
