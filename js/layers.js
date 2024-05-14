@@ -15,6 +15,20 @@ function basicVReset(layer) {
 	if(((!hasUpgrade('vp', 21)) && layer=="vp") || (layer == "a") || (layer == "ra") || (layer == "vb") ) player["v"].upgrades = pupgs
 }
 
+function hasAffordableVUpgrades() {
+	for (const element of Object.values(tmp.v.upgrades)) {
+		if (parseInt(element.id) < 40 && element.unlocked && element.cost.lte(player.v.points) && !(player.v.upgrades.includes(Number(element.id)))) return true
+		// this only looks at the first three rows, the other upgrades are special and aren't tested here
+	}	
+	return false
+}
+function hasAffordableVBuyables() {
+	for (const element of Object.values(tmp.v.buyables)) {
+		if (element.unlocked && element.cost.lte(player.v.points)) return true
+	}	
+	return false
+}
+
 addLayer("v", {
     name: "v points", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "V", // This appears on the layer's node. Default is the id with the first letter capitalized
@@ -486,6 +500,58 @@ addLayer("v", {
 		}
 		return text
 	},
+
+	clickables: {
+		11: {
+			display() {
+				return "Buy all affordable upgrades"
+			},
+			onClick() {
+				// note: only affects the first three rows
+				for (const element of [11,12,13,14,21,22,23,24,31,32,33,34]) {
+					if (tmp.v.upgrades[element].unlocked) buyUpgrade('v', element)
+				}					
+			},
+			canClick() {return hasAffordableVUpgrades()},
+			unlocked() {
+				return player.ra.showtherapy
+			},
+			style: {"min-height":"40px","width":"225px"}
+		},
+		12: {
+			display() {
+				return "Buy all affordable buyables"
+			},			
+			onClick() {
+				for (const element of Object.values(tmp.v.buyables)) {
+					if (!element.unlocked) continue
+					var count = 1
+					let cap = 9999
+					while (element.cost.lte(player.v.points)) {
+						if(count > cap) break
+						buyBuyable("v",element.id)
+						count++
+					}
+				}					
+			},
+			canClick() {return hasAffordableVBuyables()},
+			unlocked() {
+				return player.ra.showtherapy
+			},
+			style: {"min-height":"40px","width":"225px"}
+		},
+	},
+
+	tabFormat: [
+		"main-display",
+		"prestige-button",
+		"resource-display",
+		"buyables",
+		"clickables",
+		"upgrades",
+		"blank",
+		"blank",
+	],
 	
 })
 
@@ -2421,7 +2487,7 @@ function baseVChunksSec() {
 }
 function baseRaChunksSec() {
 	if (!inChallenge('ra', 11)) return new Decimal(0)
-	if (player["a"].upgrades.length <= 10) return new Decimal(2).pow(player["a"].upgrades.length).div(9999).pow(0.95)
+	if (player["a"].upgrades.length <= 10) return new Decimal(1.55).pow(player["a"].upgrades.length).pow(0.95).div(199)
 	var power = 1.15
 	if (hasMilestone('ra', 205)) power = 1.25
 	var sc = 4
