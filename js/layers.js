@@ -1264,9 +1264,44 @@ function respecSpaceStudies() {
 function getPenaltyStudyAmt(){
 	var amt = 0
 	for (const element of player["a"].upgrades) {
-		if (element > 10000) amt++
+		if (parseInt(element) > 10000) amt++
 	}
 	return new Decimal(amt)
+}
+function exportSpaceTree() {
+	if (player["a"].upgrades.length == 0) return
+	var str = ""
+	for (const element of player["a"].upgrades) {
+		var study = parseInt(element)
+		if (study > 10000) study = -(study-10000)
+		str = str + study + ","
+	}
+	str = str.substring(0,str.length-1)
+	// Export to clipboard
+	const el = document.createElement("textarea");
+	el.value = str;
+	document.body.appendChild(el);
+	el.select();
+	el.setSelectionRange(0, 99999);
+	document.execCommand("copy");
+	document.body.removeChild(el);		
+	doPopup(type = "none", text = "<span style='font-size: 16px'>Space Studies exported to clipboard</span>", title = "Exported tree", timer = 2, color = "#FFFFFF")
+}
+function importSpaceTree() {
+	imported = prompt("Input your tree");
+	if (imported == null) return
+	studies = imported.split(",")
+	study_set = []
+	for (const element of studies) {
+		var study = parseInt(element)
+		if(isNaN(study)) continue
+		if(study > 10000) continue
+		if(study < 0) {
+			if(!player.a.show_penalty_studies) continue
+			study = 0-study+10000
+		}
+		study_set.push(study)
+	}
 }
 addLayer("a", {
     name: "V-Achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -1558,20 +1593,22 @@ addLayer("a", {
 			}
 		}	
 		
+		// Preset saving
+		if (typeof study_set == "object" && study_set.length > 0) {
+			study = study_set.shift()
+			buyUpgrade('a', study)
+		}
+		
 	},
 
 	clickables: {
 		11: {
-			display() {return "Force a V reset"},
+			display() {return "Export tree"},
 			onClick() {
-				if(!confirm("Really reset the V layer for no reward?")) return
-				player.points = new Decimal(0)
-				basicVReset("a")
-				player.a.lowest_penalty = getPenaltyStudyAmt()
+				exportSpaceTree()
 			},
 			canClick() {return true},
-			unlocked() {return getPenaltyStudyAmt().gt(0)},
-			style: {"min-height": "60px"}
+			style: {"min-height": "60px", "width": "80px"}
 		},
 		12: {
 			display() {return "Respec space studies"},
@@ -1589,16 +1626,28 @@ addLayer("a", {
 			style: {"min-height": "60px"}
 		},
 		13: {
-			display() {return "Hide Penalty Studies"},
+			display() {return "Force a V reset"},
+			onClick() {
+				if(!confirm("Really reset the V layer for no reward?")) return
+				player.points = new Decimal(0)
+				basicVReset("a")
+				player.a.lowest_penalty = getPenaltyStudyAmt()
+			},
+			canClick() {return true},
+			unlocked() {return getPenaltyStudyAmt().gt(0)},
+			style: {"min-height": "60px"}
+		},
+		14: {
+			display() {return "Hide penalty studies"},
 			onClick() {
 				player.a.show_penalty_studies = false
 			},
 			canClick() {return true},
-			unlocked() {return player.a.show_penalty_studies && hasMilestone('ra', 106)},
+			unlocked() {return player.a.show_penalty_studies && hasMilestone('ra', 106) && !getPenaltyStudyAmt().gt(0)},
 			style: {"min-height": "60px"}
 		},
-		14: {
-			display() {return "Show Penalty Studies"},
+		15: {
+			display() {return "Show penalty studies"},
 			onClick() {
 				player.a.show_penalty_studies = true
 			},
@@ -1606,15 +1655,21 @@ addLayer("a", {
 			unlocked() {return !player.a.show_penalty_studies && hasMilestone('ra', 106)},
 			style: {"min-height": "60px"}
 		},
+		16: {
+			display() {return "Import tree"},
+			onClick() {
+				importSpaceTree()
+			},
+			canClick() {return true},
+			style: {"min-height": "60px", "width": "80px"}
+		},
 	},
 	
 	upgrades: {
         11: {
 			description: "Halve v reset requirement",
 			cost() { 
-				cost = new Decimal(1)
-				cost = cost.sub(ssdiscount()).max(0)
-				return cost
+				
 			},			
 			currencyDisplayName: "Space Theorems",
 			currencyInternalName: "theorems",
