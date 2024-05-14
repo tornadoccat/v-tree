@@ -1521,7 +1521,7 @@ addLayer("a", {
 		if (player["a"].vachs[4] < 6 && hasUpgrade('v', 53)) {
 			for (let i = player["a"].vachs[4]; i < 6; i++) {
 				if( player["v"].points.gte(vachreqs2(4,player["a"].vachs[4])) 
-				&& getvupgs().lte(vachreqs(4,player["a"].vachs[4])) 
+				&& getvupgs().sub(layers["v"].buyables[13].effect()).lte(vachreqs(4,player["a"].vachs[4])) 
 				&& getvbuys().lte(vachreqs(4,player["a"].vachs[4])) 
 				&& new Decimal(player["a"].upgrades.length).lte(vachreqs(4,player["a"].vachs[4])) ) {
 					earnvach(4)
