@@ -1668,8 +1668,10 @@ addLayer("a", {
 	upgrades: {
         11: {
 			description: "Halve v reset requirement",
-			cost() { 
-				
+			cost() {
+				cost = new Decimal(1)
+				cost = cost.sub(ssdiscount()).max(0)
+				return cost
 			},			
 			currencyDisplayName: "Space Theorems",
 			currencyInternalName: "theorems",
