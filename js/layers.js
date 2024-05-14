@@ -547,7 +547,7 @@ addLayer("vp", {
 	
 		if (!inChallenge('ra', 11)) mult = mult.times(tmp["vb"].effect[1])
 
-		if (hasUpgrade('v', 51) && hasUpgrade('v', 52) && !hasUpgrade('v', 53)) mult = mult.times(50)
+		if (hasUpgrade('v', 51) && !hasUpgrade('v', 53)) mult = mult.times(50)
 	
         return mult
     },
@@ -2421,6 +2421,7 @@ function baseVChunksSec() {
 }
 function baseRaChunksSec() {
 	if (!inChallenge('ra', 11)) return new Decimal(0)
+	if (player["a"].upgrades.length <= 10) return new Decimal(2).pow(player["a"].upgrades.length).div(9999).pow(0.95)
 	var power = 1.15
 	if (hasMilestone('ra', 205)) power = 1.25
 	var sc = 4
